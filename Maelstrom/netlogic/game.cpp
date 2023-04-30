@@ -814,11 +814,19 @@ static void DoGameOver(void)
 					done = true;
 					break;
 				case SDLK_DELETE:
-					if ( chars_in_handle ) {
-						sound->PlaySound(gExplosionSound, 5);
-						--chars_in_handle;
-					}
-					break;
+                case SDLK_BACKSPACE:
+                    if ( chars_in_handle ) {
+                        sound->PlaySound(gExplosionSound, 5);
+                        --chars_in_handle;
+                    }
+                    screen->FillRect(x, 300-newyork_height+2,
+                            w, newyork_height, ourBlack);
+
+                    handle[chars_in_handle] = '\0';
+                    w = DrawText(x, 300, handle,
+                        newyork, STYLE_NORM, 0xFF, 0xFF, 0xFF);
+                    screen->Update();
+                    break;
 				default:
 					break;
 				}
@@ -852,9 +860,11 @@ static void DoGameOver(void)
 
 		sound->HaltSound();
 		sound->PlaySound(gGotPrize, 6);
+#ifndef NO_NET
 		if ( gNetScores )	// All time high!
 			RegisterHighScore(hScores[which]);
 		else
+#endif
 			SaveScores();
 	} else
 	if ( gNumPlayers > 1 )	/* Let them watch their ranking */

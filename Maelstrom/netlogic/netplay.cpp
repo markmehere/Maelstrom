@@ -10,6 +10,10 @@
 #include "netplay.h"
 #include "protocol.h"
 
+#ifdef NO_NET
+#error Network play is fundamental to even single-player games as the buffer is used to register and discard keystrokes
+#endif
+
 
 int   gNumPlayers;
 int   gOurPlayer;

@@ -65,8 +65,6 @@ static void RunQuitGame(void)
 {
 	Delay(SOUND_DELAY);
 	sound->PlaySound(gMultiplierGone, 5);
-	while ( sound->Playing() )
-		Delay(SOUND_DELAY);
 	gRunning = false;
 }
 static void IncrementSound(void)
@@ -153,7 +151,7 @@ void PrintUsage(void)
 	error("or\n");
 	error("Usage: %s <options>\n\n", progname);
 	error("Where <options> can be any of:\n\n"
-"	-windowed		# Run Maelstrom in windowed mode\n"
+"	-full		# Run Maelstrom in full screen mode\n"
 "	-gamma [0-8]		# Set the gamma correction\n"
 "	-volume [0-8]		# Set the sound volume\n"
 "	-netscores		# Use the world-wide network score server\n"
@@ -170,7 +168,7 @@ int main(int argc, char *argv[])
 	/* Command line flags */
 	int doprinthigh = 0;
 	int speedtest = 0;
-	Uint32 video_flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+    Uint32 video_flags = 0; // SDL_WINDOW_FULLSCREEN_DESKTOP;
 
 	/* Normal variables */
 	SDL_Event event;
@@ -193,7 +191,7 @@ int main(int argc, char *argv[])
 
 	/* Parse command line arguments */
 	for ( progname=argv[0]; --argc; ++argv ) {
-		if ( strcmp(argv[1], "-windowed") == 0 ) {
+		if ( strcmp(argv[1], "-full") == 0 ) {
 			video_flags &= ~SDL_WINDOW_FULLSCREEN_DESKTOP;
 		} else
 		if ( strcmp(argv[1], "-gamma") == 0 ) {
@@ -258,6 +256,7 @@ int main(int argc, char *argv[])
 		} else if ( strncmp(argv[1], "-psn_", 5) == 0 ) {
 			/* Running from the Finder on Mac OSX */
 		} else {
+            printf(argv[1]);
 			PrintUsage();
 		}
 	}
@@ -286,10 +285,7 @@ int main(int argc, char *argv[])
 	gRunning = true;
 	sound->PlaySound(gNovaBoom, 5);
 	screen->Fade();		/* Fade-out */
-	Delay(SOUND_DELAY);
 	gUpdateBuffer = true;
-	while ( sound->Playing() )
-		Delay(SOUND_DELAY);
 
 	while ( gRunning ) {
 		
@@ -301,6 +297,14 @@ int main(int argc, char *argv[])
 		screen->WaitEvent(&event);
 
 		/* -- Handle it! */
+        if ( event.type == SDL_WINDOWEVENT ) {
+            
+            if ( event.window.event == SDL_WINDOWEVENT_CLOSE ) {
+                RunQuitGame();
+            }
+
+        }
+        
 		if ( event.type == SDL_KEYDOWN ) {
 			switch (event.key.keysym.sym) {
 
@@ -322,6 +326,8 @@ int main(int argc, char *argv[])
 
 				/* -- Start the game */
 				case SDLK_p:
+                    sound->HaltSound();
+                    Delay(SOUND_DELAY);
 					RunPlayGame();
 					break;
 
@@ -383,8 +389,10 @@ int main(int argc, char *argv[])
 				case SDLK_RCTRL:
 				case SDLK_LALT:
 				case SDLK_RALT:
+                case SDLK_RGUI:
+                case SDLK_LGUI:
 					break;
-
+                
 				// Dink! :-)
 				default:
 					Delay(SOUND_DELAY);

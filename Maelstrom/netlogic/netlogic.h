@@ -1,9 +1,9 @@
 
 /* Maelstrom version... */
 #ifndef VERSION
-#define VERSION "3.0.6"
+#define VERSION "3.1.0"
 #endif
-#define	VERSION_STRING		VERSION ".N"
+#define	VERSION_STRING		VERSION ".S"
 
 #define	ENEMY_SHOT_DELAY	(10/FRAME_DELAY)
 

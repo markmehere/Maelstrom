@@ -2,6 +2,8 @@
 /* This module registers a high score with the official Maelstrom
    score server
 */
+#ifndef NO_NET
+
 #include <ctype.h>
 
 #include "SDL_net.h"
@@ -208,3 +210,5 @@ static void Leave_ScoreServer(TCPsocket remote)
 	SDLNet_TCP_Close(remote);
 	SDLNet_Quit();
 }
+
+#endif

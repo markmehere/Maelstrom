@@ -147,7 +147,7 @@ public:
 	}
 
 	const char *Path(const char *filename) {
-		char *directory = SDL_GetPrefPath("Ambrosia Software", "Maelstrom");
+		char *directory = SDL_GetPrefPath("", "org.pazolli.Maelstrom");
 		if (!directory) {
 			directory = SDL_strdup(CUR_DIR);
 		}

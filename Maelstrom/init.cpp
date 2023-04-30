@@ -767,22 +767,24 @@ int DoInitializations(Uint32 video_flags)
 	}
 
 	/* Load the Maelstrom icon */
+    /*
 	icon = SDL_LoadBMP(library.Path("icon.bmp"));
 	if ( icon == NULL ) {
 		error("Fatal: Couldn't load icon: %s\n", SDL_GetError());
 		return(-1);
 	}
+    */
 
 	/* Initialize the screen */
 	screen = new FrameBuf;
 	if (screen->Init(SCREEN_WIDTH, SCREEN_HEIGHT, video_flags,
-					colors[gGammaCorrect], icon) < 0){
+					colors[gGammaCorrect], NULL) < 0){
 		error("Fatal: %s\n", screen->Error());
 		return(-1);
 	}
 	screen->SetCaption("Maelstrom");
 	atexit(CleanUp);		// Need to reset this under X11 DGA
-	SDL_FreeSurface(icon);
+	// SDL_FreeSurface(icon);
 
 	/* -- We want to access the FULL screen! */
 	SetRect(&gScrnRect, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -809,7 +811,7 @@ int DoInitializations(Uint32 video_flags)
 		if ( DropEvents() ) {
 			break;
 		}
-		Delay(60);
+		Delay(5);
 	}
 
 	/* -- Throw up our intro screen */

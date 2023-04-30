@@ -34,6 +34,7 @@ void LoadScores(void)
 	int i;
 
 	/* Try to load network scores, if we can */
+#ifndef NO_NET
 	if ( gNetScores ) {
 		if ( NetLoadScores() == 0 )
 			return;
@@ -42,6 +43,9 @@ void LoadScores(void)
 			gNetScores = 0;
 		}
 	}
+#else
+    gNetScores = 0;
+#endif
 	memset(&hScores, 0, sizeof(hScores));
 
 	scores_src = SDL_RWFromFile(path.Path(MAELSTROM_SCORES), "rb");

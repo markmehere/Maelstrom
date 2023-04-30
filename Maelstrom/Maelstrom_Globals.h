@@ -39,8 +39,10 @@ extern void   Message(const char *message);
 extern void  SetStar(int which);
 
 // Functions from netscore.cc
+#ifndef NO_NET
 extern void  RegisterHighScore(Scores high);
 extern int   NetLoadScores(void);
+#endif
 
 // External variables...
 // in main.cc : 
