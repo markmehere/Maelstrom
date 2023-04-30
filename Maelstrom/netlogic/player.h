@@ -70,7 +70,7 @@ public:
 		Bonus += bonus;
 	}
 	virtual int GetBonus(void) {
-		return(Bonus);
+		return(gProgressNoBonus ? 0 : Bonus);
 	}
 	virtual int GetBonusMult(void) {
 		return(BonusMult);

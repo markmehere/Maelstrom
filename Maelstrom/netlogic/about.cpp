@@ -182,16 +182,11 @@ void DoAbout(void)
 				"Can't use New York(18) font! -- Exiting.\n");
 					exit(255);
 				}
-				text1 = fontserv->TextImage("Port to Linux:   ",
+				text1 = fontserv->TextImage("Mark Pazolli and Sam Lantinga",
 					font, STYLE_NORM, 0xFF, 0xFF, 0x55);
-				text2 = fontserv->TextImage("Sam Lantinga",
-					font, STYLE_NORM, 0xFF, 0xFF, 0xFF);
 				screen->QueueBlit(xOff+178, yOff+298,
 								text1, NOCLIP);
-				screen->QueueBlit(xOff+178+text1->w, yOff+298,
-								text2, NOCLIP);
 				fontserv->FreeText(text1);
-				fontserv->FreeText(text2);
 				delete font;
 			}
 			screen->Update();

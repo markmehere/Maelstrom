@@ -53,6 +53,7 @@ Player::~Player()
 void
 Player::NewGame(int lives)
 {
+	gProgressNoBonus = false;
 	Playing = 1;
 	if ( gDeathMatch )
 		Lives = 1;
@@ -67,10 +68,14 @@ void
 Player::NewWave(void)
 {
 	int i;
-
+	gProgressNoBonus = false;
 	/* If we were exploding, rejuvinate us */
 	if ( Exploding || (!Alive() && Playing) ) {
-		IncrLives(1);
+		Lives = 1;
+		NewShip();
+	}
+	else if (Lives <= 0 && gNumPlayers == 1) {
+		Lives = 1;
 		NewShip();
 	}
 	Bonus = INITIAL_BONUS;
@@ -100,8 +105,10 @@ Player::NewWave(void)
 int 
 Player::NewShip(void)
 {
-	if ( Lives == 0 )
-		return(-1);
+	if ( Lives == 0 ) {
+		gProgressNoBonus = true;
+		return 0;
+	}
 	solid = 1;
 	shootable = 1;
 	Set_Blit(gPlayerShip);

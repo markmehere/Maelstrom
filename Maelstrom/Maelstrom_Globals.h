@@ -48,6 +48,7 @@ extern int   NetLoadScores(void);
 // in main.cc : 
 extern Bool	gUpdateBuffer;
 extern Bool	gRunning;
+extern Bool gProgressNoBonus;
 extern int	gNoDelay;
 
 // in init.cc : 
@@ -114,6 +115,8 @@ extern Bool	gNetScores;
 #define gFreezeSound	134
 #define gIdiotSound	135
 #define gPauseSound	136
+
+#define MAXIMUM_WAVE 5
 
 /* -- The blit'ers we use */
 extern BlitPtr	gRock1R, gRock2R, gRock3R, gDamagedShip;

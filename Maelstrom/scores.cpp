@@ -103,7 +103,7 @@ void PrintHighScores(void)
 	/* FIXME! -- Put all lines into a single formatted message */
 	printf("Name			Score	Wave\n");
 	for ( i=0; i<NUM_SCORES; ++i ) {
-		printf("%-20s	%-3.1u	%u\n", hScores[i].name,
+		printf("%-20s	%-3.1u	%d\n", hScores[i].name,
 					hScores[i].score, hScores[i].wave);
 	}
 }

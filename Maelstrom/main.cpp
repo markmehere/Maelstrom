@@ -561,7 +561,7 @@ void DrawMainScreen(void)
 		sw = fontserv->TextWidth(buffer, font, STYLE_BOLD);
 		DrawText(sRt-sw, botDiv+42+(index*18), buffer, 
 						font, STYLE_BOLD, R, G, B);
-		SDL_snprintf(buffer, sizeof(buffer), "%u", hScores[index].wave);
+		SDL_snprintf(buffer, sizeof(buffer), "%u", hScores[index].wave == -1 ? MAXIMUM_WAVE : hScores[index].wave);
 		sw = fontserv->TextWidth(buffer, font, STYLE_BOLD);
 		DrawText(wRt-sw, botDiv+42+(index*18), buffer, 
 						font, STYLE_BOLD, R, G, B);
@@ -617,7 +617,7 @@ void DrawMainScreen(void)
 
 /* -- Draw the credits */
 
-	DrawText(xOff+5+68, yOff+5+127, "Port to Linux by Sam Lantinga",
+	DrawText(xOff+5+68, yOff+5+127, "Mark Pazolli and Sam Lantinga",
 				font, STYLE_BOLD, 0xFF, 0xFF, 0x00);
 	DrawText(rightDiv+10, yOff+259, "(C) 1992-4 Ambrosia Software, Inc.",
 				font, STYLE_BOLD, 0xFF, 0xFF, 0xFF);

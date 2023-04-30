@@ -6,6 +6,7 @@
 #include "make.h"
 #include "load.h"
 
+Bool gProgressNoBonus;
 
 #ifdef MOVIE_SUPPORT
 extern int gMovie;
@@ -123,7 +124,7 @@ static int text_height;
 // Local functions used in the game module of Maelstrom
 static void DoHouseKeeping(void);
 static void NextWave(void);
-static void DoGameOver(void);
+static void DoGameOver(Bool exhausted);
 static void DoBonus(void);
 static void TwinkleStars(void);
 
@@ -464,7 +465,7 @@ void NewGame(void)
 	gPaused = 0;
 	gWave = gStartLevel - 1;
 	for ( i=gNumPlayers; i--; )
-		gPlayers[i]->NewGame(gStartLives);
+		gPlayers[i]->NewGame(gNumPlayers == 1 ? 1 : gStartLives);
 	gLastStar = STAR_DELAY;
 	gLastDrawn = 0L;
 	gNumSprites = 0;
@@ -472,12 +473,12 @@ void NewGame(void)
 	NextWave();
 
 	/* Play the game, dammit! */
-	while ( (RunFrame() > 0) && gGameOn )
+	while ( (gNumPlayers != 1 || gWave < MAXIMUM_WAVE) && RunFrame() > 0 && gGameOn )
 		DoHouseKeeping();
 	
 /* -- Do the game over stuff */
 
-	DoGameOver();
+	DoGameOver(gNumPlayers == 1 && gWave == MAXIMUM_WAVE);
 	screen->ShowCursor();
 	delete geneva;
 }	/* -- NewGame */
@@ -538,8 +539,10 @@ static void DoHouseKeeping(void)
 	}
 	
 	/* -- Time for the next wave? */
-	if (gNumRocks == 0) {
-		if ( gWhenDone == 0 )
+	if (gNumRocks == 0 || gProgressNoBonus) {
+		if (gProgressNoBonus)
+			NextWave();
+		else if ( gWhenDone == 0 )
 			gWhenDone = DEAD_DELAY;
 		else if ( --gWhenDone == 0 )
 			NextWave();
@@ -563,7 +566,6 @@ static void NextWave(void)
 
 	/* -- Initialize some variables */
 	gDisplayed = gOurPlayer;
-	gNumRocks = 0;
 	gShakeTime = 0;
 	gFreezeTime = 0;
 
@@ -634,11 +636,16 @@ static void NextWave(void)
 		delete gSprites[gNumSprites-1];
 
 	/* -- Initialize some variables */
+	gNumRocks = 0; // Must happen after sprites are killed or bugs!!!
 	gLastDrawn = 0L;
 	gBoomDelay = (60/FRAME_DELAY);
 	gNextBoom = gBoomDelay;
 	gBoomPhase = 0;
 	gWhenDone = 0;
+
+	if (gNumPlayers == 1 && gWave == MAXIMUM_WAVE) {
+		return;
+	}
 
 	/* -- Create the ship's sprite */
 	for ( index=gNumPlayers; index--; )
@@ -691,7 +698,7 @@ static int cmp_byfrags(const void *A, const void *B)
 	return(((struct FinalScore *)B)->Frags-((struct FinalScore *)A)->Frags);
 }
 
-static void DoGameOver(void)
+static void DoGameOver(Bool exhausted)
 {
 	SDL_Event event;
 	SDL_Surface *gameover;
@@ -716,7 +723,7 @@ static void DoGameOver(void)
 		qsort(final,gNumPlayers,sizeof(struct FinalScore),cmp_byscore);
 #endif
 
-	screen->Fade();
+	if (!exhausted) screen->Fade();
 	sound->HaltSound();
 
 	/* -- Kill any existing sprites */
@@ -759,10 +766,10 @@ static void DoGameOver(void)
 	screen->Update();
 
 	/* -- Play the game over sound */
-	sound->PlaySound(gGameOver, 5);
+	if (!exhausted) sound->PlaySound(gGameOver, 5);
 	screen->Fade();
 
-	while( sound->Playing() )
+	while(!exhausted && sound->Playing() )
 		Delay(SOUND_DELAY);
 
 	/* -- See if they got a high score */
@@ -854,7 +861,7 @@ static void DoGameOver(void)
 		/* In case the user just pressed <Return> */
 		handle[chars_in_handle] = '\0';
 
-		hScores[which].wave = gWave;
+		hScores[which].wave = gNumPlayers == 1 ? -1 : gWave;
 		hScores[which].score = OurShip->GetScore();
 		SDL_strlcpy(hScores[which].name, handle, sizeof(hScores[which].name));
 
@@ -866,9 +873,13 @@ static void DoGameOver(void)
 		else
 #endif
 			SaveScores();
-	} else
-	if ( gNumPlayers > 1 )	/* Let them watch their ranking */
-		SDL_Delay(3000);
+	} else {
+		if ( gNumPlayers > 1 )	/* Let them watch their ranking */
+			SDL_Delay(3000);
+		if (exhausted) {
+			sound->PlaySound(gGameOver, 5);
+		}
+	}
 
 	while ( sound->Playing() )
 		Delay(SOUND_DELAY);
@@ -969,7 +980,7 @@ static void DoBonus(void)
 	/* -- Praise them or taunt them as the case may be */
 	if (OurShip->GetBonus() == 0) {
 		Delay(SOUND_DELAY);
-		sound->PlaySound(gNoBonus, 5);
+		sound->PlaySound(gMultiplierGone, 5);
 	}
 	if (OurShip->GetBonus() > 10000) {
 		Delay(SOUND_DELAY);
@@ -1024,7 +1035,12 @@ static void DoBonus(void)
 	HandleEvents(10);
 
 	/* -- Draw the "next wave" message */
-	SDL_snprintf(numbuf, sizeof(numbuf), "Prepare for Wave %d...", gWave+1);
+	if (gNumPlayers == 1 && gWave + 1 == MAXIMUM_WAVE) {
+		SDL_snprintf(numbuf, sizeof(numbuf), "Thanks for playing!");
+	}
+	else {
+		SDL_snprintf(numbuf, sizeof(numbuf), "Prepare for Wave %d...", gWave+1);
+	}
 	sw = fontserv->TextWidth(numbuf, geneva, STYLE_BOLD);
 	x = (SCREEN_WIDTH - sw)/2;
 	DrawText(x, 259, numbuf, geneva, STYLE_BOLD, 0xFF, 0xFF, 0x00);

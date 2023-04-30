@@ -119,8 +119,9 @@ int RunFrame(void)
 	/* Now Blit them all again */
 	OBJ_LOOP(i, gNumSprites)
 		gSprites[i]->BlitSprite();
-	OBJ_LOOP(i, gNumPlayers)
-		gPlayers[i]->BlitSprite();
+	OBJ_LOOP(i, gNumPlayers) {
+		if (!gProgressNoBonus) gPlayers[i]->BlitSprite();
+	}
 	screen->Update();
 
 	/* Make sure someone is still playing... */
@@ -161,5 +162,5 @@ printf("\n");
 		}
 		gLastDrawn = ticks;
 	}
-	return(PlayersLeft);
+	return(gNumPlayers == 1 ? 1 : PlayersLeft);
 }
