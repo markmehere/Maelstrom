@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Maelstrom", "Maelstrom.vcxproj", "{DB7662AE-742D-47FC-8537-EC38CAF206AA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "maclib", "maclib\maclib.vcxproj", "{AEFBE826-9E65-43FD-B1D0-CF8BD5C31239}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "screenlib", "screenlib\screenlib.vcxproj", "{4363D9B3-D87F-4262-BCC3-6EE6EA2AA985}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		Template|x86 = Template|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB7662AE-742D-47FC-8537-EC38CAF206AA}.Debug|x86.ActiveCfg = Debug|Win32
+		{DB7662AE-742D-47FC-8537-EC38CAF206AA}.Debug|x86.Build.0 = Debug|Win32
+		{DB7662AE-742D-47FC-8537-EC38CAF206AA}.Release|x86.ActiveCfg = Release|Win32
+		{DB7662AE-742D-47FC-8537-EC38CAF206AA}.Release|x86.Build.0 = Release|Win32
+		{DB7662AE-742D-47FC-8537-EC38CAF206AA}.Template|x86.ActiveCfg = Debug|Win32
+		{DB7662AE-742D-47FC-8537-EC38CAF206AA}.Template|x86.Build.0 = Debug|Win32
+		{AEFBE826-9E65-43FD-B1D0-CF8BD5C31239}.Debug|x86.ActiveCfg = Debug|Win32
+		{AEFBE826-9E65-43FD-B1D0-CF8BD5C31239}.Debug|x86.Build.0 = Debug|Win32
+		{AEFBE826-9E65-43FD-B1D0-CF8BD5C31239}.Release|x86.ActiveCfg = Release|Win32
+		{AEFBE826-9E65-43FD-B1D0-CF8BD5C31239}.Release|x86.Build.0 = Release|Win32
+		{AEFBE826-9E65-43FD-B1D0-CF8BD5C31239}.Template|x86.ActiveCfg = Template|Win32
+		{AEFBE826-9E65-43FD-B1D0-CF8BD5C31239}.Template|x86.Build.0 = Template|Win32
+		{4363D9B3-D87F-4262-BCC3-6EE6EA2AA985}.Debug|x86.ActiveCfg = Debug|Win32
+		{4363D9B3-D87F-4262-BCC3-6EE6EA2AA985}.Debug|x86.Build.0 = Debug|Win32
+		{4363D9B3-D87F-4262-BCC3-6EE6EA2AA985}.Release|x86.ActiveCfg = Release|Win32
+		{4363D9B3-D87F-4262-BCC3-6EE6EA2AA985}.Release|x86.Build.0 = Release|Win32
+		{4363D9B3-D87F-4262-BCC3-6EE6EA2AA985}.Template|x86.ActiveCfg = Template|Win32
+		{4363D9B3-D87F-4262-BCC3-6EE6EA2AA985}.Template|x86.Build.0 = Template|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B52ADCB3-3A92-4D8A-BCAB-D64714D19D09}
+	EndGlobalSection
+EndGlobal

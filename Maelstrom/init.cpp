@@ -767,18 +767,20 @@ int DoInitializations(Uint32 video_flags)
 	}
 
 	/* Load the Maelstrom icon */
-    /*
+#ifndef __MACOSX__
 	icon = SDL_LoadBMP(library.Path("icon.bmp"));
 	if ( icon == NULL ) {
 		error("Fatal: Couldn't load icon: %s\n", SDL_GetError());
 		return(-1);
 	}
-    */
+#else
+	icon = NULL;
+#endif
 
 	/* Initialize the screen */
 	screen = new FrameBuf;
 	if (screen->Init(SCREEN_WIDTH, SCREEN_HEIGHT, video_flags,
-					colors[gGammaCorrect], NULL) < 0){
+					colors[gGammaCorrect], icon) < 0){
 		error("Fatal: %s\n", screen->Error());
 		return(-1);
 	}

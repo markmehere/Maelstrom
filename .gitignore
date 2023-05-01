@@ -2,4 +2,11 @@
 *.o
 *.a
 SDL2.framework/*
+SDL2_net.framework/*
+**/Debug
+**/Release
 **/xcuserdata
+**/.vs
+**/.vc
+**/VisualC/external
+**/VisualC/MaelstromSetup

@@ -116,7 +116,7 @@ extern Bool	gNetScores;
 #define gIdiotSound	135
 #define gPauseSound	136
 
-#define MAXIMUM_WAVE 5
+#define MAXIMUM_WAVE 8
 
 /* -- The blit'ers we use */
 extern BlitPtr	gRock1R, gRock2R, gRock3R, gDamagedShip;

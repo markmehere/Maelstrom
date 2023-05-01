@@ -88,7 +88,7 @@ public:
 	}
 
 	const char *Path(const char *filename) {
-		const char *directory;
+		const char *directory, *basepath;
 		size_t pathlen;
 
 		directory = SDL_getenv("MAELSTROM_LIB");
@@ -111,6 +111,25 @@ public:
 		if ( access(path, F_OK) == 0 ) {
 			return(path);
 		}
+		delete[] path;
+#endif
+
+#ifdef WIN32
+		// Ahh C the cadillac of languages can you believe it lost out to Pascal?
+		char* underscoreFilename = new char[strlen(filename)+1];
+		strcpy(underscoreFilename, filename);
+		for (int i = 0; i < strlen(underscoreFilename); i++) {
+			underscoreFilename[i] = underscoreFilename[i] == ' ' ? '_' : underscoreFilename[i];
+		}
+		basepath = SDL_GetBasePath(); // FIXME: it's insane we're not using this for all platforms
+		pathlen = strlen(basepath)+strlen(filename)+1;
+		path = new char[pathlen];
+		SDL_snprintf(path, pathlen, "%s\%s", basepath, underscoreFilename);
+		if ( access(path, F_OK) == 0 ) {
+			delete[] underscoreFilename;
+			return(path);
+		}
+		delete[] underscoreFilename;
 		delete[] path;
 #endif
 

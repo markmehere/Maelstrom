@@ -561,7 +561,7 @@ void DrawMainScreen(void)
 		sw = fontserv->TextWidth(buffer, font, STYLE_BOLD);
 		DrawText(sRt-sw, botDiv+42+(index*18), buffer, 
 						font, STYLE_BOLD, R, G, B);
-		SDL_snprintf(buffer, sizeof(buffer), "%u", hScores[index].wave == -1 ? MAXIMUM_WAVE : hScores[index].wave);
+		SDL_snprintf(buffer, sizeof(buffer), "%u", hScores[index].wave == -1 ? MAXIMUM_WAVE - 1 : hScores[index].wave);
 		sw = fontserv->TextWidth(buffer, font, STYLE_BOLD);
 		DrawText(wRt-sw, botDiv+42+(index*18), buffer, 
 						font, STYLE_BOLD, R, G, B);
