@@ -26,7 +26,7 @@
 
 static Wave wave;
 
-int main(int argc, char *argv[])
+int snd2wav(const char *path)
 {
 	Mac_Resource *macx;
 	Mac_ResData  *snd;
@@ -34,41 +34,19 @@ int main(int argc, char *argv[])
 	Uint16 *ids, rate;
 	int i;
 
-	rate = 0;
-	if ( (argc >= 3) && (strcmp(argv[1], "-rate") == 0) ) {
-		int i;
-		rate = (Uint16)atoi(argv[2]);
-		for ( i=3; argv[i]; ++i ) {
-			argv[i-2] = argv[i];
-		}
-		argv[i-2] = NULL;
-		argc -= 2;
-	}
-	if ( argv[1] == NULL ) {
-		fprintf(stderr,
-		"Usage: %s [-rate <rate>] <snd_fork> [soundnum]\n", argv[0]);
-		exit(1);
-	}
-
-	macx = new Mac_Resource(argv[1]);
+	macx = new Mac_Resource(path);
 	if ( macx->Error() ) {
 		fprintf(stderr, "%s\n", macx->Error());
 		delete macx;
 		exit(255);
 	}
 	if ( macx->NumResources("snd ") == 0 ) {
-		fprintf(stderr, "No sound resources in '%s'\n", argv[1]);
+		fprintf(stderr, "No sound resources in '%s'\n", path);
 		delete macx;
 		exit(1);
 	}
 
-	/* If a specific resource is requested, save it alone */
-	if ( argv[2] ) {
-		ids = new Uint16[2];
-		ids[0] = atoi(argv[2]);
-		ids[1] = 0xFFFF;
-	} else
-		ids = macx->ResourceIDs("snd ");
+	ids = macx->ResourceIDs("snd ");
 
 	for ( i=0; ids[i] != 0xFFFF; ++i ) {
 		snd = macx->Resource("snd ", ids[i]);
@@ -77,9 +55,9 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		wave.Load(snd, rate);
-		sprintf(wavname, "snd_%d.wav", ids[i]);
+		sprintf(wavname, "/tmp/Maelstrom_Snd#%d.wav", ids[i]);
 		wave.Save(wavname);
 	}
 	delete macx;
-	exit(0);
+    return 0;
 }

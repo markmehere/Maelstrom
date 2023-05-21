@@ -24,6 +24,8 @@
 
 static int bogus_running = 0;
 
+extern int snd2wav(const char *path);
+
 extern "C" {
 static int BogusAudioThread(void *data)
 {
@@ -101,6 +103,7 @@ Sound:: Sound(const char *soundfile, Uint8 vol)
 
 	/* Load the sounds from the resource files */
 	soundres = new Mac_Resource(soundfile);
+	snd2wav(soundfile);
 	if ( soundres->Error() ) {
 		error("%s", soundres->Error());
 		return;

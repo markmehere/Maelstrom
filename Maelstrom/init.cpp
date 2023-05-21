@@ -11,16 +11,17 @@
 #include "load.h"
 #include "colortable.h"
 #include "fastrand.h"
+#include <png.h>
 
 
 // Global variables set in this file...
-Sound    *sound = NULL;
+Sound	*sound = NULL;
 FontServ *fontserv = NULL;
 FrameBuf *screen = NULL;
 
 Sint32	gLastHigh;
 Uint32	gLastDrawn;
-int     gNumSprites;
+int	 gNumSprites;
 Rect	gScrnRect;
 SDL_Rect gClipRect;
 int	gStatusLine;
@@ -67,7 +68,7 @@ void DoSplash(void)
 	if ( splash == NULL ) {
 		error("Can't load Ambrosia splash title! (ID=%d)\n", 999);
 		return;
-        }
+		}
 	screen->QueueBlit(SCREEN_WIDTH/2-splash->w/2,
 			  SCREEN_HEIGHT/2-splash->h/2, splash, NOCLIP);
 	screen->Update();
@@ -1061,6 +1062,8 @@ static void BackwardsSprite(BlitPtr *theBlit, BlitPtr oldBlit)
 /* ----------------------------------------------------------------- */
 /* -- Load in the sprites we use */
 
+Uint8 **twokrows;
+
 static int LoadSprite(Mac_Resource *spriteres,
 			BlitPtr *theBlit, int baseID, int numFrames)
 {
@@ -1071,6 +1074,26 @@ static int LoadSprite(Mac_Resource *spriteres,
 	int	top, left, bottom, right;
 	int	row, col;
 	Uint8	*mask;
+	Uint8 **rows, **ccrows;
+	png_structp png_ptr;
+	png_infop info_ptr;
+
+	if (baseID == 2000) {
+		twokrows = new Uint8 *[32 * 6];
+		for (int r = 0; r < 32 * 6; r++) {
+			twokrows[r] = new Uint8[32 * 10 * 4]();
+		}
+		ccrows = twokrows;
+	}
+	else if (baseID > 2001 && baseID < 2010) {
+		ccrows = twokrows;
+	}
+	else {
+		ccrows = new Uint8 *[32 * 6];
+		for (int r = 0; r < 32 * 6; r++) {
+			ccrows[r] = new Uint8[32 * 10 * 4]();
+		}
+	}
 
 	aBlit = new Blit;
 	aBlit->numFrames = numFrames;
@@ -1140,8 +1163,77 @@ static int LoadSprite(Mac_Resource *spriteres,
 			aBlit->mask[index][offset] = 
 				((mask[offset/8]>>(7-(offset%8)))&0x01);
 		}
+
+		if (numFrames == 1 && baseID > 2001 && baseID < 2010) {
+			index = (baseID - 2000) / 2;
+		}
+		rows = new Uint8 *[32];
+		for (int r = 0; r < 32; r++) {
+			rows[r] = &S->data[32 * r];
+			for (int p = 0; p < 32; p++) {
+				ccrows[r + (index / 10) * 32][(p + (index % 10) * 32) * 4] = colors[gGammaCorrect][rows[r][p]].r;
+				ccrows[r + (index / 10) * 32][(p + (index % 10) * 32) * 4 + 1] = colors[gGammaCorrect][rows[r][p]].g;
+				ccrows[r + (index / 10) * 32][(p + (index % 10) * 32) * 4 + 2] = colors[gGammaCorrect][rows[r][p]].b;
+				ccrows[r + (index / 10) * 32][(p + (index % 10) * 32) * 4 + 3] = aBlit->mask[baseID >= 2000 && baseID < 2010 ? 0 : index][r * 32 + p] ? 0xFF : 0x00;
+			}
+		}
+
+		delete[] rows;
 	}
 	(*theBlit) = aBlit;
+
+	char pngfile[256];
+	SDL_snprintf(pngfile, sizeof(pngfile), "/tmp/Maelstrom_Res#%hd.png", (short)baseID);
+
+	// create file
+	FILE *fp = fopen(pngfile, "wb");
+	if (!fp)
+		error("[write_png_file] File %s could not be opened for writing", pngfile);
+
+	// initialize stuff
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+		error("[write_png_file] png_create_write_struct failed");
+
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+		error("[write_png_file] png_create_info_struct failed");
+
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during init_io");
+
+	png_init_io(png_ptr, fp);
+
+	// write header
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during writing header");
+
+	Uint8 rowNum = ((numFrames - 1) / 10) + 1;
+	png_set_IHDR(png_ptr, info_ptr, 32 * 10, 32 * rowNum, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+	png_write_info(png_ptr, info_ptr);
+
+	// write bytes
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during writing bytes");
+
+	png_write_image(png_ptr, ccrows);
+
+	// end write
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during end of write");
+
+	png_write_end(png_ptr, NULL);
+
+	fclose(fp);
+
+	if (baseID < 2000 || baseID > 2010) {
+		for (int r = 0; r < 32; r++) {
+			delete[] ccrows[r];
+		}
+		delete ccrows;
+	}
+	
 	return(0);
 }	/* -- LoadSprite */
 
@@ -1173,6 +1265,7 @@ static int LoadCICNS(void)
 		return(-1);
 	if ( (gKeyIcon = GetCIcon(screen, 100)) == NULL )
 		return(-1);
+	SaveCIcons();
 	return(0);
 }	/* -- LoadCICNS */
 

@@ -35,6 +35,7 @@
 		A81BC66129FE6758008AAC16 /* Mac_Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A81BC64F29FE6758008AAC16 /* Mac_Sound.cpp */; };
 		A81BC66229FE6758008AAC16 /* Mac_FontServ.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A81BC65029FE6758008AAC16 /* Mac_FontServ.cpp */; };
 		A81BC66329FE6758008AAC16 /* Mac_Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A81BC65129FE6758008AAC16 /* Mac_Wave.cpp */; };
+		A8675CF92A19C8B5007F245D /* snd2wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8675CF82A19C8B5007F245D /* snd2wav.cpp */; };
 		A870F9EA29FE6CF6005E72C4 /* Maelstrom_Fonts in Resources */ = {isa = PBXBuildFile; fileRef = A81BC5E229FE6352008AAC16 /* Maelstrom_Fonts */; };
 		A870F9EB29FE6CF6005E72C4 /* Maelstrom_Sounds in Resources */ = {isa = PBXBuildFile; fileRef = A81BC5E029FE6352008AAC16 /* Maelstrom_Sounds */; };
 		A870F9EC29FE6CF6005E72C4 /* Maelstrom_Sprites in Resources */ = {isa = PBXBuildFile; fileRef = A81BC5E129FE6352008AAC16 /* Maelstrom_Sprites */; };
@@ -125,6 +126,7 @@
 		A81BC65B29FE6758008AAC16 /* Mac_Compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mac_Compat.h; sourceTree = "<group>"; };
 		A81BC65D29FE6758008AAC16 /* Mac_FontServ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mac_FontServ.h; sourceTree = "<group>"; };
 		A81BC65E29FE6758008AAC16 /* Mac_Wave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mac_Wave.h; sourceTree = "<group>"; };
+		A8675CF82A19C8B5007F245D /* snd2wav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = snd2wav.cpp; sourceTree = "<group>"; };
 		A86B2AFE29FDEDF700996C7C /* Maelstrom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Maelstrom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A86B2B0B29FDEDF800996C7C /* Maelstrom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Maelstrom.entitlements; sourceTree = "<group>"; };
 		A870F9ED29FE6EEA005E72C4 /* icon.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = icon.bmp; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 				A81BC65029FE6758008AAC16 /* Mac_FontServ.cpp */,
 				A81BC65E29FE6758008AAC16 /* Mac_Wave.h */,
 				A81BC65129FE6758008AAC16 /* Mac_Wave.cpp */,
+				A8675CF82A19C8B5007F245D /* snd2wav.cpp */,
 			);
 			path = maclib;
 			sourceTree = "<group>";
@@ -340,6 +343,7 @@
 				A81BC62429FE6423008AAC16 /* logic.cpp in Sources */,
 				A81BC60129FE63DF008AAC16 /* netscore.cpp in Sources */,
 				A81BC64629FE670E008AAC16 /* pixel.cpp in Sources */,
+				A8675CF92A19C8B5007F245D /* snd2wav.cpp in Sources */,
 				A81BC62B29FE6423008AAC16 /* make.cpp in Sources */,
 				A81BC63F29FE670E008AAC16 /* SDL_FrameBuf.cpp in Sources */,
 				A81BC62929FE6423008AAC16 /* netplay.cpp in Sources */,
@@ -499,6 +503,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/SDL2.framework/Headers",
 					"$(PROJECT_DIR)/SDL2_net.framework/Headers",
+					/opt/homebrew/include,
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Developed by Andrew Welch, Mark Pazolli and Sam Lantinga  GNU General Public Licence v2";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
@@ -507,8 +512,13 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 3.2.0;
+				OTHER_LDFLAGS = "-lpng";
 				PRODUCT_BUNDLE_IDENTIFIER = org.pazolli.Maelstrom;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -534,6 +544,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/SDL2.framework/Headers",
 					"$(PROJECT_DIR)/SDL2_net.framework/Headers",
+					/opt/homebrew/include,
 				);
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Developed by Andrew Welch, Mark Pazolli and Sam Lantinga  GNU General Public Licence v2";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
@@ -542,8 +553,13 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 3.2.0;
+				OTHER_LDFLAGS = "-lpng";
 				PRODUCT_BUNDLE_IDENTIFIER = org.pazolli.Maelstrom;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

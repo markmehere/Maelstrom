@@ -193,5 +193,6 @@ private:
 extern SDL_Surface *Load_Icon(char **xpm);
 extern SDL_Surface *Load_Title(FrameBuf *screen, int title_id);
 extern SDL_Surface *GetCIcon(FrameBuf *screen, short cicn_id);
+extern void SaveCIcons();
 
 #endif /* _load_h */
