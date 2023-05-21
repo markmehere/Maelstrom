@@ -20,7 +20,7 @@ Controls controls =
 { SDLK_CAPSLOCK,SDLK_SPACE,SDLK_UP,SDLK_RIGHT,SDLK_LEFT,SDLK_TAB,SDLK_ESCAPE };
 #else
 Controls controls =
-   { SDLK_PAUSE,SDLK_LSHIFT,SDLK_UP,SDLK_RIGHT,SDLK_LEFT,SDLK_SPACE,SDLK_ESCAPE };
+   { SDLK_PAUSE,SDLK_RSHIFT,SDLK_UP,SDLK_RIGHT,SDLK_LEFT,SDLK_SPACE,SDLK_ESCAPE };
 #endif
 SDL_Keymod gToggleFullscreenMod = KMOD_ALT;
 
@@ -514,8 +514,8 @@ int DropEvents(void)
 	return(keys);
 }
 
-#define DAWN_DIALOG_WIDTH	318
-#define DAWN_DIALOG_HEIGHT	194
+#define DAWN_DIALOG_WIDTH	336
+#define DAWN_DIALOG_HEIGHT	206
 
 void ShowDawn(void)
 {

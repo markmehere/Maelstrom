@@ -120,7 +120,7 @@ static void RunSpeedTest(void)
 	const int test_reps = 100;	/* How many full cycles to run */
 
 	Uint32 then, now;
-	int i, frame, x=((640/2)-16), y=((480/2)-16), onscreen=0;
+	int i, frame, x=((800/2)-16), y=((600/2)-16), onscreen=0;
 
 	screen->Clear();
 	then = SDL_GetTicks();

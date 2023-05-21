@@ -109,8 +109,8 @@ void DoAbout(void)
 			if ( idOn == 134 ) {
 				int x, y, off;
 
-				x = (80) * SCALE_FACTOR;
-				y = (136) * SCALE_FACTOR;
+				x = ((SCREEN_WIDTH - 640) / 2 + 80) * SCALE_FACTOR;
+				y = ((SCREEN_HEIGHT - 480) / 2 + 136) * SCALE_FACTOR;
 				off = 39 * SCALE_FACTOR;
 
 				objects[numsprites++] = 
@@ -130,8 +130,8 @@ void DoAbout(void)
 				y += off;
 
 				/* -- Now for the second column */
-				x = (340) * SCALE_FACTOR;
-				y = (136) * SCALE_FACTOR;
+				x = ((SCREEN_WIDTH - 640) / 2 + 340) * SCALE_FACTOR;
+				y = ((SCREEN_HEIGHT - 480) / 2 + 136) * SCALE_FACTOR;
 				off = 39 * SCALE_FACTOR;
 
 				objects[numsprites++] = 

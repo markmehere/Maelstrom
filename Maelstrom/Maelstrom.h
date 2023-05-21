@@ -8,14 +8,16 @@
 
 #include "rect.h"
 
-#define SCREEN_WIDTH		640
-#define SCREEN_HEIGHT		480
+#define SCREEN_WIDTH		800
+#define SCREEN_HEIGHT		600
 
 #define	SOUND_DELAY		6
 #define	FADE_STEPS		40
 
 /* Time in 60'th of second between frames */
 #define FRAME_DELAY		2
+
+#define CENTER_DIALOG 1
 
 #define MAX_SPRITES		100
 #define MAX_SPRITE_FRAMES	60
@@ -35,7 +37,7 @@
 #define	SHOT_SIZE		4
 #define	SHOT_SCALE_FACTOR	4
 
-#define	STATUS_HEIGHT		14
+#define	STATUS_HEIGHT		(SCREEN_HEIGHT > 520 ? 18 : 14)
 #define	SHIELD_WIDTH		55
 #define	INITIAL_BONUS		2000
 

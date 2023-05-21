@@ -258,6 +258,7 @@ Maclike_Dialog:: Run(int expand_steps)
 	}
 	Screen->Clear((Uint16)X, (Uint16)Y, (Uint16)Width, (Uint16)Height);
 	Screen->Update();
+	SDL_Delay(100);
 
 	/* Draw the dialog elements (after the slow expand) */
 	for ( relem = rect_list.next; relem; relem = relem->next ) {

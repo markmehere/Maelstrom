@@ -898,6 +898,7 @@ static void DoBonus(void)
 	int i, x, sw, xs, xt;
 	int bonus_width;
 	int score_width;
+	int yoff = (SCREEN_HEIGHT - 480) / 2;
 	char numbuf[128];
 
 	DrawStatus(false, true);
@@ -918,19 +919,19 @@ static void DoBonus(void)
 	SDL_snprintf(numbuf, sizeof(numbuf), "Wave %d completed.", gWave);
 	sw = fontserv->TextWidth(numbuf, geneva, STYLE_BOLD);
 	x = (SCREEN_WIDTH - sw) / 2;
-	DrawText(x,  150, numbuf, geneva, STYLE_BOLD, 0xFF, 0xFF, 0x00);
+	DrawText(x, yoff + 150, numbuf, geneva, STYLE_BOLD, 0xFF, 0xFF, 0x00);
 
 	/* -- Draw the bonus */
 	sw = fontserv->TextWidth("Bonus Score:     ", geneva, STYLE_BOLD);
 	x = ((SCREEN_WIDTH - sw) / 2) - 20;
-	DrawText(x, 200, "Bonus Score:     ", geneva, STYLE_BOLD,
+	DrawText(x, yoff + 200, "Bonus Score:     ", geneva, STYLE_BOLD,
 						30000>>8, 30000>>8, 0xFF);
 	xt = x+sw;
 
 	/* -- Draw the score */
 	sw = fontserv->TextWidth("Score:     ", geneva, STYLE_BOLD);
 	x = ((SCREEN_WIDTH - sw) / 2) - 3;
-	DrawText(x, 220, "Score:     ", geneva, STYLE_BOLD,
+	DrawText(x, yoff + 220, "Score:     ", geneva, STYLE_BOLD,
 						30000>>8, 30000>>8, 0xFF);
 	xs = x+sw;
 	screen->Update();
@@ -953,14 +954,14 @@ static void DoBonus(void)
 			SDL_Surface *sprite;
 
 			SDL_snprintf(numbuf, sizeof(numbuf), "%-5.1d", OurShip->GetBonus());
-			DrawText(x, 200, numbuf, geneva, STYLE_BOLD,
+			DrawText(x, yoff + 200, numbuf, geneva, STYLE_BOLD,
 							0xFF, 0xFF, 0xFF);
 			x += 75;
 			OurShip->MultBonus();
 			Delay(SOUND_DELAY);
 			sound->PlaySound(gMultiplier, 5);
 			sprite = gMult[OurShip->GetBonusMult()-2]->sprite[0];
-			screen->QueueBlit(xs+34, 180, sprite);
+			screen->QueueBlit(xs + 34, yoff + 180, sprite);
 			screen->Update();
 			Delay(60);
 		}
@@ -969,10 +970,10 @@ static void DoBonus(void)
 	sound->PlaySound(gFunk, 5);
 
 	SDL_snprintf(numbuf, sizeof(numbuf), "%-5.1d", OurShip->GetBonus());
-	bonus_width = DrawText(x, 200, numbuf, geneva, STYLE_BOLD,
+	bonus_width = DrawText(x, yoff + 200, numbuf, geneva, STYLE_BOLD,
 							0xFF, 0xFF, 0xFF);
 	SDL_snprintf(numbuf, sizeof(numbuf), "%-5.1d", OurShip->GetScore());
-	score_width = DrawText(xt, 220, numbuf, geneva, STYLE_BOLD,
+	score_width = DrawText(xt, yoff + 220, numbuf, geneva, STYLE_BOLD,
 							0xFF, 0xFF, 0xFF);
 	screen->Update();
 	Delay(60);
@@ -1012,15 +1013,15 @@ static void DoBonus(void)
 				OurShip->IncrBonus(-OurShip->GetBonus());
 			}
 	
-			screen->FillRect(x, 200-text_height+2,
+			screen->FillRect(x, yoff + 200-text_height+2,
 					bonus_width, text_height, ourBlack);
 			SDL_snprintf(numbuf, sizeof(numbuf), "%-5.1d", OurShip->GetBonus());
-			bonus_width = DrawText(x, 200, numbuf,
+			bonus_width = DrawText(x, yoff + 200, numbuf,
 					geneva, STYLE_BOLD, 0xFF, 0xFF, 0xFF);
-			screen->FillRect(xt, 220-text_height+2,
+			screen->FillRect(xt, yoff + 220 - text_height + 2,
 					score_width, text_height, ourBlack);
 			SDL_snprintf(numbuf, sizeof(numbuf), "%-5.1d", OurShip->GetScore());
-			score_width = DrawText(xt, 220, numbuf,
+			score_width = DrawText(xt, yoff + 220, numbuf,
 					geneva, STYLE_BOLD, 0xFF, 0xFF, 0xFF);
 
 			DrawStatus(false, true);
@@ -1043,7 +1044,7 @@ static void DoBonus(void)
 	}
 	sw = fontserv->TextWidth(numbuf, geneva, STYLE_BOLD);
 	x = (SCREEN_WIDTH - sw)/2;
-	DrawText(x, 259, numbuf, geneva, STYLE_BOLD, 0xFF, 0xFF, 0x00);
+	DrawText(x, yoff + 259, numbuf, geneva, STYLE_BOLD, 0xFF, 0xFF, 0x00);
 	screen->Update();
 	HandleEvents(100);
 
