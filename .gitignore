@@ -10,3 +10,4 @@ SDL2_net.framework/*
 **/.vc
 **/VisualC/external
 **/VisualC/MaelstromSetup
+web/snd
