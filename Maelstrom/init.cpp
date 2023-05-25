@@ -265,6 +265,71 @@ static void InitShots(void)
 	gPlayerShot = screen->LoadImage(SHOT_SIZE,SHOT_SIZE,gPlayerShotColors);
 	gEnemyShot = screen->LoadImage(SHOT_SIZE, SHOT_SIZE, gEnemyShotColors);
 
+	Uint8 **ccrows;
+	png_structp png_ptr;
+	png_infop info_ptr;
+
+	ccrows = new Uint8 *[SHOT_SIZE];
+	for (int r = 0; r < SHOT_SIZE; r++) {
+		ccrows[r] = new Uint8[SHOT_SIZE]();
+	}
+
+	for (int p = 0; p < SHOT_SIZE * SHOT_SIZE; p++) {
+		ccrows[p / SHOT_SIZE][(p % SHOT_SIZE) * 4] = colors[gGammaCorrect][gEnemyShotColors[p]].r;
+		ccrows[p / SHOT_SIZE][(p % SHOT_SIZE) * 4 + 1] = colors[gGammaCorrect][gEnemyShotColors[p]].g;
+		ccrows[p / SHOT_SIZE][(p % SHOT_SIZE) * 4 + 2] = colors[gGammaCorrect][gEnemyShotColors[p]].b;
+		ccrows[p / SHOT_SIZE][(p % SHOT_SIZE) * 4 + 3] = 0xFF;
+	}
+
+	char pngfile[256];
+	SDL_snprintf(pngfile, sizeof(pngfile), "/tmp/Maelstrom_Shot.png");
+
+	// create file
+	FILE *fp = fopen(pngfile, "wb");
+	if (!fp)
+		error("[write_png_file] File %s could not be opened for writing", pngfile);
+
+	// initialize stuff
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+		error("[write_png_file] png_create_write_struct failed");
+
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+		error("[write_png_file] png_create_info_struct failed");
+
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during init_io");
+
+	png_init_io(png_ptr, fp);
+
+	// write header
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during writing header");
+
+	png_set_IHDR(png_ptr, info_ptr, SHOT_SIZE, SHOT_SIZE, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+	png_write_info(png_ptr, info_ptr);
+
+	// write bytes
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during writing bytes");
+
+	png_write_image(png_ptr, ccrows);
+
+	// end write
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during end of write");
+
+	png_write_end(png_ptr, NULL);
+
+	fclose(fp);
+
+	for (int r = 0; r < SHOT_SIZE; r++) {
+		delete[] ccrows[r];
+	}
+	delete ccrows;
+
 	/* Now setup the shot origin table */
 
 	gShotOrigins[0].h = 15 * SCALE_FACTOR;
@@ -836,9 +901,6 @@ int DoInitializations(Uint32 video_flags)
 		}
 	}
 
-	/* -- Create the shots array */
-	InitShots();
-
 	/* -- Initialize the sprite manager - after we load blits and shots! */
 	if ( InitSprites() < 0 )
 		return(-1);
@@ -862,6 +924,9 @@ int DoInitializations(Uint32 video_flags)
 
 static int LoadBlits(Mac_Resource *spriteres)
 {
+
+	/* -- Create the shots array */
+	InitShots();
 
 	DrawLoadBar(1);
 
@@ -1074,9 +1139,16 @@ static int LoadSprite(Mac_Resource *spriteres,
 	int	top, left, bottom, right;
 	int	row, col;
 	Uint8	*mask;
-	Uint8 **rows, **ccrows;
-	png_structp png_ptr;
-	png_infop info_ptr;
+	Uint8 **rows, **ccrows, **ddrows;
+	png_structp png_ptr, fpng_ptr;
+	png_infop info_ptr, finfo_ptr;
+
+	if (baseID == 200) {
+		ddrows = new Uint8 *[48 * 6];
+		for (int r = 0; r < 48 * 6; r++) {
+			ddrows[r] = new Uint8[48 * 10 * 4]();
+		}
+	}
 
 	if (baseID == 2000) {
 		twokrows = new Uint8 *[32 * 6];
@@ -1175,6 +1247,14 @@ static int LoadSprite(Mac_Resource *spriteres,
 				ccrows[r + (index / 10) * 32][(p + (index % 10) * 32) * 4 + 1] = colors[gGammaCorrect][rows[r][p]].g;
 				ccrows[r + (index / 10) * 32][(p + (index % 10) * 32) * 4 + 2] = colors[gGammaCorrect][rows[r][p]].b;
 				ccrows[r + (index / 10) * 32][(p + (index % 10) * 32) * 4 + 3] = aBlit->mask[baseID >= 2000 && baseID < 2010 ? 0 : index][r * 32 + p] ? 0xFF : 0x00;
+				if (baseID == 200) {
+					if (aBlit->mask[index][r * 32 + p]) {
+						ddrows[r + (index / 10) * 48 + 8][(p + (index % 10) * 48 + 8) * 4] = colors[gGammaCorrect][rows[r][p]].r;
+						ddrows[r + (index / 10) * 48 + 8][(p + (index % 10) * 48 + 8) * 4 + 1] = colors[gGammaCorrect][rows[r][p]].g;
+						ddrows[r + (index / 10) * 48 + 8][(p + (index % 10) * 48 + 8) * 4 + 2] = colors[gGammaCorrect][rows[r][p]].b;
+						ddrows[r + (index / 10) * 48 + 8][(p + (index % 10) * 48 + 8) * 4 + 3] = 0xFF;
+					}
+				}
 			}
 		}
 
@@ -1233,6 +1313,58 @@ static int LoadSprite(Mac_Resource *spriteres,
 		}
 		delete ccrows;
 	}
+
+	if (baseID == 200) {
+
+		char npngfile[256];
+		SDL_snprintf(npngfile, sizeof(npngfile), "/tmp/Maelstrom_Base#%hd.png", (short)baseID);
+
+		// create file
+		FILE *fpn = fopen(npngfile, "wb");
+		if (!fpn)
+			error("[write_png_file] File %s could not be opened for writing", npngfile);
+
+		// initialize stuff
+		fpng_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+		if (!fpng_ptr)
+			error("[write_png_file] png_create_write_struct failed");
+
+		finfo_ptr = png_create_info_struct(fpng_ptr);
+		if (!finfo_ptr)
+			error("[write_png_file] png_create_info_struct failed");
+
+		if (setjmp(png_jmpbuf(fpng_ptr)))
+			error("[write_png_file] Error during init_io");
+
+		png_init_io(fpng_ptr, fpn);
+
+		// write header
+		if (setjmp(png_jmpbuf(fpng_ptr)))
+			error("[write_png_file] Error during writing header");
+
+		png_set_IHDR(fpng_ptr, finfo_ptr, 48 * 10, 48 * rowNum, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+		png_write_info(fpng_ptr, finfo_ptr);
+
+		// write bytes
+		if (setjmp(png_jmpbuf(fpng_ptr)))
+			error("[write_png_file] Error during writing bytes");
+
+		png_write_image(fpng_ptr, ddrows);
+
+		// end write
+		if (setjmp(png_jmpbuf(fpng_ptr)))
+			error("[write_png_file] Error during end of write");
+
+		png_write_end(fpng_ptr, NULL);
+
+		fclose(fpn);
+
+		for (int r = 0; r < 64; r++) {
+			delete[] ddrows[r];
+		}
+		delete ddrows;
+	}
 	
 	return(0);
 }	/* -- LoadSprite */
@@ -1269,7 +1401,6 @@ static int LoadCICNS(void)
 	return(0);
 }	/* -- LoadCICNS */
 
-
 /* ----------------------------------------------------------------- */
 /* -- Load in the sprites we use */
 
@@ -1283,6 +1414,25 @@ static int LoadSmallSprite(Mac_Resource *spriteres,
 	int	top, left, bottom, right;
 	int	row, col;
 	Uint8	*mask;
+	Uint8 **rows, **ccrows;
+	png_structp png_ptr;
+	png_infop info_ptr;
+	int psize;
+
+	if (baseID == 400 || baseID == 500) {
+		ccrows = new Uint8 *[48 * 6];
+		for (int r = 0; r < 48 * 6; r++) {
+			ccrows[r] = new Uint8[48 * 10 * 4]();
+		}
+		psize = 48;
+	}
+	else {
+		ccrows = new Uint8 *[16 * 6];
+		for (int r = 0; r < 16 * 6; r++) {
+			ccrows[r] = new Uint8[16 * 10 * 4]();
+		}
+		psize = 16;
+	}
 
 	aBlit = new Blit;
 	aBlit->numFrames = numFrames;
@@ -1353,8 +1503,79 @@ static int LoadSmallSprite(Mac_Resource *spriteres,
 			aBlit->mask[index][offset] = 
 				((mask[offset/8]>>(7-(offset%8)))&0x01);
 		}
+
+		if (index > 60) printf("OHONONON!");
+
+		rows = new Uint8 *[16];
+		for (int r = 0; r < 16; r++) {
+			rows[r] = &S->data[16 * r];
+			int voff = psize == 16 ? 0 : gThrustOrigins[index].v / SCALE_FACTOR + 8;
+			int hoff = psize == 16 ? 0 : gThrustOrigins[index].h / SCALE_FACTOR + 8;
+			printf("%d %d", hoff, voff);
+			for (int p = 0; p < 16; p++) {
+				if (baseID == 400 || baseID == 500) {
+					ccrows[r + (index / 10) * psize + voff][(p + (index % 10) * psize + hoff) * 4] = colors[gGammaCorrect][rows[r][p]].r;
+					ccrows[r + (index / 10) * psize + voff][(p + (index % 10) * psize + hoff) * 4 + 1] = colors[gGammaCorrect][rows[r][p]].g;
+					ccrows[r + (index / 10) * psize + voff][(p + (index % 10) * psize + hoff) * 4 + 2] = colors[gGammaCorrect][rows[r][p]].b;
+					ccrows[r + (index / 10) * psize + voff][(p + (index % 10) * psize + hoff) * 4 + 3] = aBlit->mask[index][r * 16 + p] ? 0xFF : 0x00;
+				}
+			}
+		}
+	
+		delete[] rows;
 	}
 	(*theBlit) = aBlit;
+
+	char pngfile[256];
+	SDL_snprintf(pngfile, sizeof(pngfile), "/tmp/Maelstrom_SmlIcon#%hd.png", (short)baseID);
+
+	// create file
+	FILE *fp = fopen(pngfile, "wb");
+	if (!fp)
+		error("[write_png_file] File %s could not be opened for writing", pngfile);
+
+	// initialize stuff
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+		error("[write_png_file] png_create_write_struct failed");
+
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+		error("[write_png_file] png_create_info_struct failed");
+
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during init_io");
+
+	png_init_io(png_ptr, fp);
+
+	// write header
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during writing header");
+
+	Uint8 rowNum = ((numFrames - 1) / 10) + 1;
+	png_set_IHDR(png_ptr, info_ptr, psize * 10, psize * rowNum, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+	png_write_info(png_ptr, info_ptr);
+
+	// write bytes
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during writing bytes");
+
+	png_write_image(png_ptr, ccrows);
+
+	// end write
+	if (setjmp(png_jmpbuf(png_ptr)))
+		error("[write_png_file] Error during end of write");
+
+	png_write_end(png_ptr, NULL);
+
+	fclose(fp);
+
+	for (int r = 0; r < psize; r++) {
+		delete[] ccrows[r];
+	}
+	delete ccrows;
+
 	return(0);
 }	/* -- LoadSmallSprite */
 
